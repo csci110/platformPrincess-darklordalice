@@ -177,6 +177,8 @@ class Bat extends Sprite {
         this.speed = this.normalSpeed = 20;
         this.angle = 45 + Math.round(Math.random() * 3) * 90;
         this.angleTimer = 0;
+        this.x = this.startX = x;
+        this.y = this.startY = y;
     }
 
     attack() {
@@ -204,8 +206,24 @@ class Bat extends Sprite {
             this.attack();
         }
         
+        if (Math.round(this.speed) === this.normalSpeed) {
+        let now = game.getTime();
+        if (now - this.normalSpeed < Math.round(Math.random)) {
+            this.angle = 90 + 1 * 90;
+        }
+        }
         
     }
+    
+    handleBoundaryContact() {
+        if (this.y < 0){
+            this.y = 0;
+        }
+        
+        if (this.y > game.displayHeight){
+            this.y = this.startY, this.speed = this.normalSpeed, this.angle = 225;
+        }
+    }        
 }
 
 let leftBat = new Bat(200, 100);
