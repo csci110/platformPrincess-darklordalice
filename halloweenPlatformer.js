@@ -29,6 +29,11 @@ class Slider extends Support {
         this.angle = angle;
         this.speed = 48;
     }
+    
+    handleGameLoop {
+        if (this.x > game.displayWidth)
+        
+    }
 }
 
 new Slider(startPlatformExtension.x + 48 * 3, startPlatformExtension.y + 48, 0);
