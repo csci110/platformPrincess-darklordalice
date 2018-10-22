@@ -29,6 +29,10 @@ class Slider extends Support {
         this.angle = angle;
         this.speed = 48;
     }
+    
+    handleGameLoop() {
+        
+    }
 }
 
 new Slider(startPlatformExtension.x + 48 * 3, startPlatformExtension.y + 48, 0);
@@ -76,9 +80,30 @@ class Princess extends Sprite {
         this.isFalling = false; // assume she is not falling unless proven otherwise
         // check directly below princess for supports
         let supports = game.getSpritesOverlapping(this.x, this.y + this.height, this.width, 1, Support);
-        // is there none, or is its *top* at or below the bottom of the princess
         if (supports.length === 0 || supports[0].y < this.y + this.height) {
-            this.isFalling = true; //she is falling so..
-            this.y = this.y + 4; //simulate gravity 
+            this.isFalling = true; 
+            this.y = this.y + 4; // gravity
         }
     }
+}
+
+let ann = new Princess();
+
+class Door extends Sprite {
+    constructor() {
+        super();
+        this.setImage("door.png");
+        this.x = game.displayWidth - 48;
+        this.y = finishPlatform.y - 2 * 48;
+        this.accelerateOnBounce = false;
+    }
+
+    handleCollision(otherSprite) {
+        if (otherSprite === ann) {
+            game.end('Congratulations!');
+        }
+    }
+}
+
+let exit = new Door();
+
