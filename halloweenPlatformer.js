@@ -21,6 +21,7 @@ class Platform extends Support {
 let startPlatform = new Platform("tileFloatCenter.png", 0, 400);
 let startPlatformExtension = new Platform("tileFloatRight.png", 127, 400);
 let finishPlatform = new Platform("tileFloatLeft.png", game.displayWidth - 48 * 2, 400);
+let float = new Platform("tileFloatCenter.png", 710, 100);
 
 class Slider extends Support {
     constructor(x, y, angle) {
@@ -28,15 +29,36 @@ class Slider extends Support {
         this.name = 'A Sliding Support';
         this.angle = angle;
         this.speed = 48;
+        this.accelerateOnBounce = false;
     }
-    
+
     handleGameLoop() {
-        
+        if (this.x < 128 + 128) {
+            this.angle = 90;
+        }
+
+        if (this.y < 100) {
+            this.angle = 0;
+        }
+
+    }
+
+    handleCollision(otherSprite) {
+        if (otherSprite == float) {
+            this.angle = 270;
+            this.accelerateOnBounce = false;
+        }
+
+        if (otherSprite == finishPlatform) {
+            this.angle = 180;
+            this.accelerateOnBounce = false;
+        }
     }
 }
 
-new Slider(startPlatformExtension.x + 48 * 3, startPlatformExtension.y + 48, 0);
+
 new Slider(finishPlatform.x - 48 * 5, finishPlatform.y + 48, 180);
+
 
 class Princess extends Sprite {
     constructor() {
@@ -63,7 +85,7 @@ class Princess extends Sprite {
 
     handleSpacebar() {
         if (!this.isFalling) {
-            this.y = this.y - 1.25 * this.height; // jump
+            this.y = this.y - 4 * this.height; // jump
         }
     }
 
@@ -79,11 +101,18 @@ class Princess extends Sprite {
         this.x = Math.max(5, this.x);
         this.isFalling = false; // assume she is not falling unless proven otherwise
         // check directly below princess for supports
-        let supports = game.getSpritesOverlapping(this.x, this.y + this.height, this.width, 1, Support);
+        let supports = game.getSpritesOverlapping(this.x, this.y + this.height, this.width, 5, Support);
         if (supports.length === 0 || supports[0].y < this.y + this.height) {
-            this.isFalling = true; 
+            this.isFalling = true;
             this.y = this.y + 4; // gravity
         }
+        if (supports.length > 0) this.y = supports[0].y - 48;
+
+        this.speed == 0;
+    }
+    
+    handleBoundaryContact() {
+        game.end('Better Luck Next Time');
     }
 }
 
@@ -107,3 +136,26 @@ class Door extends Sprite {
 
 let exit = new Door();
 
+class Crate extends Sprite {
+    constructor() {
+        super();
+        this.setImage("crate.png");
+        this.x = 100;
+        this.y = startPlatformExtension.y - 2 * 48;
+        this.accelerateOnBounce = true;
+    }
+
+    handleGameLoop() {
+        this.speed == 0;
+        let supports = game.getSpritesOverlapping(this.x, this.y + this.height, this.width, 5, Support);
+        if (supports.length === 0 || supports[0].y < this.y + this.height) {
+            this.isFalling = true;
+            this.y = this.y + 4; // gravity
+        }
+        
+        if (supports.length > 0) this.y = supports[0].y - 48; 
+    }
+
+}
+
+let crate = new Crate();
